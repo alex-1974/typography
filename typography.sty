@@ -1,0 +1,149 @@
+\RequirePackage{l3keys2e,xparse}
+\ProvidesExplPackage{typography} {2022/12/09}{1.0} {Commands related to typography}
+
+% There are two possible approaches here. 
+% If you want to allow a function to be used 'inside' something like the second argument of \int_set:Nn 
+% then it has to be expandable. That means it has to use only other functions which are themselves expandable,
+% which in expl3 means that they are marked in interface3 with a star.
+
+\ExplSyntaxOn
+
+% Define constants
+\fp_const:Nn \c_typo_golden_ratio_fp { \fp_eval:n { (1+sqrt(5)) / 2} }
+\tl_const:Nn \c_typo_alphabet_tl {abcdefghijklmnopqrstuvwxyz}
+
+\makeatletter
+% expandable function
+\cs_new:Npn \typo_document_fontsize: {
+	\dim_eval:n { \f@size pt }
+}
+\makeatother
+
+% Get cap height
+% #1 font parameter
+\cs_new:Npn \typo_capheight: {
+	\vbox_set:Nn \l_tmpa_box { HI }
+	\dim_eval:n { \box_ht:N \l_tmpa_box }
+}
+
+% Get x height
+% #1 font parameter
+\cs_new:Npn \typo_xheight:n #1 {
+	\vbox_set:Nn \l_tmpa_box { #1 {x} }
+	\dim_eval:n { \box_ht:N \l_tmpa_box }
+}
+
+% Get total height
+% #1 font parameter
+\cs_new:Npn \typo_totalheight:n #1 {
+	\vbox_set:Nn \l_tmpa_box { #1 {HIyjqpg} }
+	\dim_eval:n { \box_ht_plus_dp:N \l_tmpa_box }
+}
+
+
+
+% Get current fontsize in pt
+\NewDocumentCommand\documentFontsize {} {
+	\typo_document_fontsize:
+}
+
+% Get cap Height in pt
+\NewDocumentCommand\capHeight {O{}} {
+	{ #1 \typo_capheight: }
+}
+
+% Get cap Height in pt
+\NewDocumentCommand\xHeight {O{}} {
+	\typo_xheight:n #1
+}
+
+% Get cap Height in pt
+\NewDocumentCommand\totalHeight {O{}} {
+	\typo_totalheight:n #1
+}
+
+% #1 variable name
+% #2 font parameter
+\cs_new:Npn \typo_xratio:n #1 {
+	%\dim_use:n { \typo_capheight:n {#1} }
+	%\fp_set:Nx \l_tmpb_fp { \typo_xheight:n {#1} }
+	\dim_eval:n \typo_capheight:  
+}
+
+% #1 variable name
+% #2 text
+\cs_new_protected:Nn \__typo_total_charwidth:nn {
+	\dim_zero_new:N #1
+	\hbox_set:Nn \l_tmpa_box { #2 }
+	\dim_set:Nn #1 { \box_wd:N \l_tmpa_box }
+}
+
+% #1 variable name
+\cs_new_protected:Nn \typo_avg_charwidth:nn {
+	\dim_zero_new:N #1
+	\__typo_total_charwidth:nn {\__acw_dim}{ #2 { \c_typo_alphabet_tl } }
+	\dim_set:Nn #1 { \dim_eval:n { \__acw_dim / \tl_count:N \c_typo_alphabet_tl } }
+}
+
+% Set lengths
+%% Set charwidth
+\dim_new:N \__cw_dim
+\typo_avg_charwidth:nn { \__cw_dim }{}
+\newlength{\charwidth}
+\setlength{\charwidth} { \dim_use:N \__cw_dim }
+
+% Does all the math behind the calculation of the optimal line height
+% Calculates the optimal line height depending on the font, 
+% defined by its x-ratio and character constants, 
+% respectively the font size and line width in characters per line
+% #1 variable name
+% #2 fontsize
+% #3 linewidth (in cpl)
+% #4 width factor (34)
+% #5 x-ratio
+\cs_new_protected:Nn \__typo_lineheight_impl:nnnnn {
+	\dim_zero_new:N #1
+	\fp_zero_new:N \qa_fp
+	\fp_zero_new:N \qb_fp
+	\fp_zero_new:N \xhc_fp
+	% lower boundary
+	\fp_set:Nn \qa_fp { 3 - \c_typo_golden_ratio_fp }
+	\fp_set:Nn \qb_fp { 2 * \c_typo_golden_ratio_fp - 3 }
+	% constant width factor
+	% x-height correction
+	\fp_set:Nn \xhc_fp { (#5 - (\c_typo_golden_ratio_fp - 1)) / \c_typo_golden_ratio_fp }
+	
+	\dim_set:Nn #1 { \fp_to_decimal:n { \fp_eval:n { 
+		round(
+		#2 * (
+		 \qa_fp + 
+		 ( \qb_fp * (#3 / ( #2 * #4 )) ) +
+		 \xhc_fp
+		 )
+		 ,2)
+	} } pt}
+}
+
+% Defines a new length that contains the optimal line height depending on the font,
+% font size and line width in characters per line
+% #1 length name
+% #2 fontsize
+% #3 linewidth (in cpl)
+% #4 font parameter
+%\NewDocumentCommand {\lineheights} { mmmO{} } {
+%	\typo_x_ratio:nn {\xratio_fp}{#4}
+%	\__typo_lineheight_impl:nnnnn {\result_dim}{#2}{#3}{34}{\xratio_fp}
+%	\newlength {#1}
+%	\setlength {#1}{\result_dim}
+%}
+
+\NewDocumentCommand{\extractfont}{}
+ {
+  \str_set:Nx \l_tmpa_str { \fontname\font }
+  \regex_replace_once:nnN { \:.* } { } \l_tmpa_str
+  \regex_replace_once:nnN { \A \[(.*)\] \Z } { \1 } \l_tmpa_str
+  \regex_replace_once:nnN { \.[^\.]* \Z } { } \l_tmpa_str
+  \str_use:N \l_tmpa_str
+ }
+ 
+\ExplSyntaxOff

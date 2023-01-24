@@ -1,0 +1,79 @@
+\documentclass[a4paper,10pt]{scrarticle}
+\usepackage{fontspec}
+
+\usepackage{polyglossia}
+\setmainlanguage[variant=british]{english}
+\setotherlanguage[babelshorthands=true]{german}
+
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{typography}
+
+\defaultfontfeatures{Scale=MatchLowercase}
+\setmainfont[Ligatures=TeX]{Linux Libertine O}
+\setsansfont[Ligatures=TeX]{Linux Biolinum O}
+
+\setlength{\parindent}{0pt}
+\reversemarginpar
+
+\title{\textnormal{The \textbf{typography} Package}}
+\author{Alexander Bernardi}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Tests}
+Current fontname \extractfont \par
+\fontname\font \par
+{ \textsf \extractfont } \par 
+\textsf{ \fontname\font } \par
+Cap~height:~\capHeight{} \par 
+X~height:~\xHeight{} \par
+Total height:~\totalHeight{} \par
+%Current fontsize \documentFontsize \par
+%Huge fontsize {\Huge\documentFontsize} \par
+%Textsf \textsf{\currentFontsize} \par
+%Charwidth \the\charwidth \par
+%\lineheights{\baseline}{10pt}{66}{}
+%Baseline \the\baseline
+
+\ExplSyntaxOn
+\typo_document_fontsize: \par
+typo_capheight:~ \typo_capheight: \par
+typo_xratio:~ \typo_xratio:n 
+%\dim_new:N \capheight
+%\cs_generate_variant:Nn \dim_set:Nn { NV }
+%\dim_set:NV \capheight { \dim_use:N { \typo_capheight:nn {}{} } }
+
+\ExplSyntaxOff
+
+\section{Introduction}
+
+\begin{equation}
+\phi = \frac{1+\sqrt{5}}{2}
+\end{equation}
+
+\begin{tabular}{ll}
+$f_{1}$ & $f\phi^{\frac{4}{2}} = f\phi^{2}$\\
+$f_{2}$ & $f\phi^{\frac{3}{2}}$ \\
+$f_{3}$ & $f\phi^{\frac{2}{2}} = f\phi$ \\
+$f_{4}$ & $f\phi^{\frac{1}{2}} = f\sqrt{\phi}$ \\
+$f_{5}$ & $f\phi^{\frac{0}{2}} = f$ \\
+$f_{6}$ & $\frac{f}{\phi^{\frac{1}{2}}} = \frac{f}{\sqrt{\phi}}$ \\
+\end{tabular}
+
+\begin{equation}
+h = f \left[ (3-\phi) + (2\phi-3) \frac{w}{fx_{w}} + c_{f} \right]
+\end{equation}
+\section{Commands}
+
+\subsection{Lengths}
+
+\noindent\marginpar{charwidth} Durchschnittliche Zeichenlänge der mainfont bei normalsize
+
+\noindent\marginpar{baseline} Optimale Zeilenhöhe der mainfont bei normalsize als baseline
+
+\noindent\marginpar{xheight} Die x-Höhe der mainfont bei normalsize 
+
+\end{document}
