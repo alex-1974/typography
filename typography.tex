@@ -7,14 +7,20 @@
 
 \usepackage{xcolor}
 \usepackage{booktabs}
-\usepackage{typography}
+\usepackage{graphicx}
+\graphicspath{ {./img/} }
+\usepackage{blindtext}
 
-\defaultfontfeatures{Scale=MatchLowercase}
+%\defaultfontfeatures{Scale=MatchLowercase}
 \setmainfont[Ligatures=TeX]{Linux Libertine O}
-\setsansfont[Ligatures=TeX]{Linux Biolinum O}
+\setsansfont[Ligatures=TeX,Scale=MatchLowercase]{Linux Biolinum O}
+
+\usepackage{typography}
 
 \setlength{\parindent}{0pt}
 \reversemarginpar
+
+\newcommand{\loremipsum}{Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat.}
 
 \title{\textnormal{The \textbf{typography} Package}}
 \author{Alexander Bernardi}
@@ -23,52 +29,47 @@
 \begin{document}
 \maketitle
 
-\section{Tests}
-Current fontname \extractfont \par
-\fontname\font \par
-{ \textsf \extractfont } \par 
-\textsf{ \fontname\font } \par
-Cap~height:~\capHeight{} \par 
-X~height:~\xHeight{} \par
-Total height:~\totalHeight{} \par
-%Current fontsize \documentFontsize \par
-%Huge fontsize {\Huge\documentFontsize} \par
-%Textsf \textsf{\currentFontsize} \par
-%Charwidth \the\charwidth \par
-%\lineheights{\baseline}{10pt}{66}{}
-%Baseline \the\baseline
+\section{Typography}
 
-\ExplSyntaxOn
-\typo_document_fontsize: \par
-typo_capheight:~ \typo_capheight: \par
-typo_xratio:~ \typo_xratio:n 
-%\dim_new:N \capheight
-%\cs_generate_variant:Nn \dim_set:Nn { NV }
-%\dim_set:NV \capheight { \dim_use:N { \typo_capheight:nn {}{} } }
+The word "typography" in English comes from the Greek roots τύπος [typos ('type')] and -γραφία [-graphia ('writing')].
+Typography is the art and technique of arranging type to make written language legible, readable and appealing when displayed.
 
-\ExplSyntaxOff
+\includegraphics[width=\linewidth]{img/Typography Lines Terms.png} 
 
-\section{Introduction}
 
-\begin{equation}
-\phi = \frac{1+\sqrt{5}}{2}
-\end{equation}
 
-\begin{tabular}{ll}
-$f_{1}$ & $f\phi^{\frac{4}{2}} = f\phi^{2}$\\
-$f_{2}$ & $f\phi^{\frac{3}{2}}$ \\
-$f_{3}$ & $f\phi^{\frac{2}{2}} = f\phi$ \\
-$f_{4}$ & $f\phi^{\frac{1}{2}} = f\sqrt{\phi}$ \\
-$f_{5}$ & $f\phi^{\frac{0}{2}} = f$ \\
-$f_{6}$ & $\frac{f}{\phi^{\frac{1}{2}}} = \frac{f}{\sqrt{\phi}}$ \\
-\end{tabular}
+\begin{minipage}[t]{0.48\linewidth}
+{\fontspec{Latin Modern Roman}\fontsize{10}{12}\loremipsum\\ Latin Modern Roman @ 10pt}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+{\fontspec{Clarity City}\fontsize{10}{12}\loremipsum\\ Clarity City @ 10pt}
+\end{minipage}
 
-\begin{equation}
-h = f \left[ (3-\phi) + (2\phi-3) \frac{w}{fx_{w}} + c_{f} \right]
-\end{equation}
-\section{Commands}
+\noindent\marginpar{point size} Point size refers to the height of the font but not the height of the letter.
+1 point (pt) has been approximated as exactly $\frac{1}{72.27}$ of the inch by Donald Knuth for the default unit of \TeX. A TeX point is 0.351 mm.\par
+\medskip
+{\centering \includegraphics[width=\linewidth]{img/Typography leading.png} \par}
+\medskip
 
-\subsection{Lengths}
+\noindent\marginpar{leading} In typography, leading is the space between adjacent lines of type. 
+In hand typesetting, leading is the thin strips of lead that were inserted between lines of type in the composing stick to increase the vertical distance between them. 
+The thickness of the strip is called leading and is equal to the difference between the size of the type and the distance from one baseline to the next. For instance, given a type size of 10 points and a distance between baselines of 12 points, the leading would be 2 points.\par
+\medskip
+{\centering \includegraphics[scale=1]{img/Typography leading font.png} \par}
+\medskip
+
+\noindent\marginpar{total height}
+
+\noindent\marginpar{cap height}
+
+\noindent\marginpar{x-height}
+
+\noindent\marginpar{letter-spacing} Letter-spacing adjusts the overall horizontal space between groups of letters.
+ 
+\noindent\marginpar{kerning} Kerning adjusts the horizontal space between specific letter pairs to improve legibility in words that have inconsistent spacing, which makes the text look awkward and unprofessional.
+
+\section{Lengths}
 
 \noindent\marginpar{charwidth} Durchschnittliche Zeichenlänge der mainfont bei normalsize
 
