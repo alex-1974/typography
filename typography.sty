@@ -11,35 +11,81 @@
 % Define constants
 \fp_const:Nn \c_typo_golden_ratio_fp { \fp_eval:n { (1+sqrt(5)) / 2} }
 \tl_const:Nn \c_typo_alphabet_tl {abcdefghijklmnopqrstuvwxyz}
+\tl_const:Nn \c_typo_cap_chars_tl {HI}
+\tl_const:Nn \c_typo_x_chars_tl {x}
+\tl_const:Nn \c_typo_height_chars_tl {HIyjqpg}
+
+
 
 \makeatletter
 % expandable function
-\cs_new:Npn \typo_document_fontsize: {
-	\dim_eval:n { \f@size pt }
+\cs_new:Npn \typo_get_document_fontsize: {
+	\dim_eval:n { \f@size pt } 
+}
+\cs_new:Npn \typo_set_document_fontsize:N #1 {
+	\dim_set:Nn #1 { \f@size pt } 
 }
 \makeatother
 
 % Get cap height
 % #1 font parameter
-\cs_new:Npn \typo_capheight: {
-	\vbox_set:Nn \l_tmpa_box { HI }
+\cs_new:Npn \typo_get_capheight:n #1 {
+	\vbox_set:Nn \l_tmpa_box { #1 \c_typo_cap_chars_tl }
 	\dim_eval:n { \box_ht:N \l_tmpa_box }
+}
+
+\cs_new_protected:Npn \typo_set_capheight:Nn #1#2 {
+	\group_begin:
+		\vbox_set:Nn \l_tmpa_box { #2 \c_typo_cap_chars_tl }
+		\exp_args:NNNe
+	\group_end:
+	\dim_set:Nn #1 { \dim_eval:n { \box_ht:N \l_tmpa_box } }
 }
 
 % Get x height
 % #1 font parameter
-\cs_new:Npn \typo_xheight:n #1 {
-	\vbox_set:Nn \l_tmpa_box { #1 {x} }
+\cs_new:Npn \typo_get_xheight:n #1 {
+	\vbox_set:Nn \l_tmpa_box { #1 \c_typo_x_chars_tl }
 	\dim_eval:n { \box_ht:N \l_tmpa_box }
+}
+
+\cs_new_protected:Npn \typo_set_xheight:Nn #1#2 {
+	\group_begin:
+		\vbox_set:Nn \l_tmpa_box { #2 \c_typo_x_chars_tl }
+		\exp_args:NNNe
+	\group_end:
+	\dim_set:Nn #1 { \dim_eval:n { \box_ht:N \l_tmpa_box } }
 }
 
 % Get total height
 % #1 font parameter
-\cs_new:Npn \typo_totalheight:n #1 {
-	\vbox_set:Nn \l_tmpa_box { #1 {HIyjqpg} }
+\cs_new:Npn \typo_get_totalheight:n #1 {
+	\vbox_set:Nn \l_tmpa_box { #1 \c_typo_height_chars_tl }
 	\dim_eval:n { \box_ht_plus_dp:N \l_tmpa_box }
 }
 
+\cs_new_protected:Npn \typo_set_totalheight:Nn #1#2 {
+	\group_begin:
+		\vbox_set:Nn \l_tmpa_box { #2 \c_typo_height_chars_tl }
+		\exp_args:NNNe
+	\group_end:
+	\dim_set:Nn #1 { \dim_eval:n { \box_ht_plus_dp:N \l_tmpa_box } }
+}
+
+% #1 font parameter
+\cs_new_protected:Npn \typo_set_xratio:Nn #1#2 {
+	\group_begin:
+	\vbox_set:Nn \l_tmpa_box { #2 \c_typo_cap_chars_tl }
+	\vbox_set:Nn \l_tmpb_box { #2 \c_typo_x_chars_tl }
+	\exp_args:NNNe
+	\group_end:
+	\fp_set:Nn #1 { \dim_ratio:nn { \box_ht:N \l_tmpb_box } { \box_ht:N \l_tmpa_box } }
+}
+\cs_new:Npn \typo_get_xratio:n #1 {
+	\vbox_set:Nn \l_tmpa_box { #1 \c_typo_cap_chars_tl }
+	\vbox_set:Nn \l_tmpb_box { #1 \c_typo_x_chars_tl }
+	\fp_eval:n { \dim_ratio:nn { \box_ht:N \l_tmpb_box } { \box_ht:N \l_tmpa_box } }
+}
 
 
 % Get current fontsize in pt
@@ -47,51 +93,63 @@
 	\typo_document_fontsize:
 }
 
-% Get cap Height in pt
+% Get cap height in pt
 \NewDocumentCommand\capHeight {O{}} {
-	{ #1 \typo_capheight: }
+%	\typo_capheight:n #1
 }
 
-% Get cap Height in pt
+% Get x-height in pt
 \NewDocumentCommand\xHeight {O{}} {
-	\typo_xheight:n #1
+%	\typo_xheight:n #1
 }
 
-% Get cap Height in pt
+% Get total height in pt
 \NewDocumentCommand\totalHeight {O{}} {
-	\typo_totalheight:n #1
+%	\typo_totalheight:n #1
 }
 
-% #1 variable name
+% Get x-ratio 
+\NewDocumentCommand\xRatio {O{}} {
+	%\typo_xratio:n #1
+}
+\cs_new_protected:Npn \typo_get_avg_charwidth:n #1 {
+	\hbox_set:Nn \l_tmpa_box { #1 \c_typo_alphabet_tl }
+	\dim_eval:n { \box_wd:N \l_tmpa_box  / \tl_count:N \c_typo_alphabet_tl }
+}
+% Get average charwidth
+% #1 name of length
 % #2 font parameter
-\cs_new:Npn \typo_xratio:n #1 {
-	%\dim_use:n { \typo_capheight:n {#1} }
-	%\fp_set:Nx \l_tmpb_fp { \typo_xheight:n {#1} }
-	\dim_eval:n \typo_capheight:  
+\cs_new_protected:Npn \typo_set_avg_charwidth:Nn #1#2 {
+	\group_begin:
+		\hbox_set:Nn \l_tmpa_box { #2 \c_typo_alphabet_tl }
+		\exp_args:NNNe 
+	\group_end:
+	\dim_set:Nn #1 { \dim_eval:n { \box_wd:N \l_tmpa_box } / \tl_count:N \c_typo_alphabet_tl } 
 }
+\exp_args_generate:n {NNe}
 
-% #1 variable name
-% #2 text
-\cs_new_protected:Nn \__typo_total_charwidth:nn {
-	\dim_zero_new:N #1
-	\hbox_set:Nn \l_tmpa_box { #2 }
-	\dim_set:Nn #1 { \box_wd:N \l_tmpa_box }
+\NewDocumentCommand\setAverageCharWidth { O{} m } {
+	\typo_set_avg_charwidth:Nn #2 {#1}
 }
-
-% #1 variable name
-\cs_new_protected:Nn \typo_avg_charwidth:nn {
-	\dim_zero_new:N #1
-	\__typo_total_charwidth:nn {\__acw_dim}{ #2 { \c_typo_alphabet_tl } }
-	\dim_set:Nn #1 { \dim_eval:n { \__acw_dim / \tl_count:N \c_typo_alphabet_tl } }
+\NewDocumentCommand\setCapHeight { O{} m } {
+	\typo_set_capheight:Nn #2 {#1}
 }
-
+\NewDocumentCommand\setxHeight { O{} m } {
+	\typo_set_xheight:Nn #2 {#1}
+}
+\NewDocumentCommand\setTotalHeight { O{} m } {
+	\typo_set_totalheight:Nn #2 {#1}
+}
 % Set lengths
 %% Set charwidth
-\dim_new:N \__cw_dim
-\typo_avg_charwidth:nn { \__cw_dim }{}
-\newlength{\charwidth}
-\setlength{\charwidth} { \dim_use:N \__cw_dim }
-
+%\dim_new:N \__cw_dim
+%\typo_avg_charwidth:n { \__cw_dim }{}
+\AtBeginDocument{
+%\newlength{\charwidth}
+%\setlength{\charwidth} { \dim_eval:n { \typo_avg_charwidth:n {} } }
+}
+%\dim_new:N \charwidth
+%\dim_set:Nn \charwidth { \averageCharWidth {} }
 % Does all the math behind the calculation of the optimal line height
 % Calculates the optimal line height depending on the font, 
 % defined by its x-ratio and character constants, 
