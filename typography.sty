@@ -95,6 +95,25 @@
 	\fp_eval:n { \dim_ratio:nn { \box_ht:N \l_tmpb_box } { \box_ht:N \l_tmpa_box } }
 }
 
+\cs_new:Npn \typo_get_mu:n #1 {
+	\dim_zero_new:N \acw_dim
+	\dim_zero_new:N \fsize_dim
+	\typo_set_avg_charwidth:Nn {\acw_dim}{ #1 }
+	\typo_set_totalheight:Nn {\fsize_dim}{#1}
+	\fp_eval:n { \dim_ratio:nn { \fsize_dim }{ \acw_dim } }
+}
+
+\cs_new_protected:Npn \typo_set_mu:Nn #1#2 {
+	\group_begin:
+	\dim_zero_new:N \acw\dim
+	\dim_zero_new:n \fsize_dim
+	\typo_set_avg_charwidth:Nn {\acw_dim}{ #2 }
+	\typo_set_totalheight:Nn {\fsize_dim}{#2}
+	\exp_args:NNNe
+	\group_end:
+	\fp_set:Nn #1 { \fp_eval:n { \fsize_dim / \acw_dim }}
+}
+
 % Get average charwidth
 % #1 font parameter
 \cs_new_protected:Npn \typo_get_avg_charwidth:n #1 {
@@ -144,10 +163,9 @@
 %% Set charwidth
 %\dim_new:N \__cw_dim
 %\typo_avg_charwidth:n { \__cw_dim }{}
-\AtBeginDocument{
-%\newlength{\charwidth}
-%\setlength{\charwidth} { \dim_eval:n { \typo_avg_charwidth:n {} } }
-}
+%\AtBeginDocument{
+
+%}
 %\dim_new:N \charwidth
 %\dim_set:Nn \charwidth { \averageCharWidth {} }
 
@@ -208,4 +226,12 @@
   \str_use:N \l_tmpa_str
  }
  
+\newlength{\charwidth}
+\setAverageCharWidth{\charwidth}
+\newlength{\baseline}
+
+\AtBeginDocument{
+\typo_lineheight:Nnnn {\baseline}{66}{34}{}
+}
 \ExplSyntaxOff
+

@@ -10,6 +10,7 @@
 \usepackage{graphicx}
 \graphicspath{ {./img/} }
 \usepackage{blindtext}
+\usepackage{listings}
 
 %\defaultfontfeatures{Scale=MatchLowercase}
 \setmainfont[Ligatures=TeX]{Linux Libertine O}
@@ -68,6 +69,22 @@ The thickness of the strip is called leading and is equal to the difference betw
 \noindent\marginpar{letter-spacing} Letter-spacing adjusts the overall horizontal space between groups of letters.
  
 \noindent\marginpar{kerning} Kerning adjusts the horizontal space between specific letter pairs to improve legibility in words that have inconsistent spacing, which makes the text look awkward and unprofessional.
+
+\section{Commands}
+
+\noindent\marginpar{\texttt{getTotalHeight\\setTotalHeight}} Gesamthöhe des fonts
+\begin{lstlisting}[language={[AlLaTeX]TeX}]
+\getTotalHeight
+
+\newlength\totalheight
+\setTotalHeight\totalheight
+\the\totalheight
+
+\typo_get_totalheight:n {font parameter}
+\typo_set_totalheight:Nn <variable name> <font parameter>
+\end{lstlisting}
+
+\noindent\marginpar{\texttt{getCapHeight\\setCapHeight}} Caphöhe des fonts
 
 \section{Lengths}
 
