@@ -6,7 +6,7 @@
 % then it has to be expandable. That means it has to use only other functions which are themselves expandable,
 % which in expl3 means that they are marked in interface3 with a star.
 
-\ExplSyntaxOn
+%\ExplSyntaxOn
 
 % Define constants
 \fp_const:Nn \c_typo_golden_ratio_fp { \fp_eval:n { (1+sqrt(5)) / 2} }
@@ -133,25 +133,32 @@
 \exp_args_generate:n {NNe}
 
 % Get document fontsize in pt
-\NewDocumentCommand\documentFontsize {} {
-	\typo_document_fontsize:
+\NewDocumentCommand\documentFontsize { m } {
+	\typo_set_document_fontsize: #1
 }
 
+% Average charwidth
+\NewDocumentCommand\getAverageCharWidth { O{} } {
+	\typo_get_avg_charwidth:N #1 
+}
 \NewDocumentCommand\setAverageCharWidth { O{} m } {
 	\typo_set_avg_charwidth:Nn #2 {#1}
 }
+% Cap height
 \NewDocumentCommand\setCapHeight { O{} m } {
 	\typo_set_capheight:Nn #2 {#1}
 }
 \NewDocumentCommand\getCapHeight { O{} } {
 	\typo_get_capheight:n {#1}
 }
+% x height
 \NewDocumentCommand\setxHeight { O{} m } {
 	\typo_set_xheight:Nn #2 {#1}
 }
 \NewDocumentCommand\getxHeight { O{} } {
 	\typo_get_xheight:n {#1}
 }
+% total height
 \NewDocumentCommand\setTotalHeight { O{} m } {
 	\typo_set_totalheight:Nn #2 {#1}
 }
@@ -159,79 +166,20 @@
 	\typo_get_totalheight:n {#1}
 }
 
-% Set lengths
-%% Set charwidth
-%\dim_new:N \__cw_dim
-%\typo_avg_charwidth:n { \__cw_dim }{}
-%\AtBeginDocument{
-
-%}
-%\dim_new:N \charwidth
-%\dim_set:Nn \charwidth { \averageCharWidth {} }
-
-
-% #1 variable name
-% #2 linewidth (in cpl)
-% #3 width factor (34)
-% #4 font parameter
-\cs_new_protected:Npn \typo_lineheight:Nnnn #1#2#3#4 {
-	\group_begin:
-	\int_zero_new:N \cpl_int
-	\int_zero_new:N \wf_int
-	\fp_zero_new:N \xratio_fp
-	\dim_zero_new:N \fsize_dim
-	% linewidth (in cpl)
-	\fp_set:Nn \cpl_int {#2}
-	% width factor (34)
-	\int_set:Nn \wf_int {#3}
-	% x-ratio
-	\typo_set_xratio:Nn \xratio_fp {#4}
-	% fsize
-	\typo_set_totalheight:Nn \fsize_dim {#4}
-	% x-height correction
-	\fp_set:Nn \xhc_fp { (\xratio_fp - (\c_typo_golden_ratio_fp - 1)) / \c_typo_golden_ratio_fp }
-	
-	\fp_zero_new:N \qa_fp
-	\fp_zero_new:N \qb_fp
-	\fp_zero_new:N \xhc_fp
-	% lower boundary
-	\fp_set:Nn \qa_fp { 3 - \c_typo_golden_ratio_fp }
-	\fp_set:Nn \qb_fp { 2 * \c_typo_golden_ratio_fp - 3 }
-	\exp_args:NNNe
-	\group_end:
-	% This part does all the math behind the calculation of the optimal line height
-	% Calculates the optimal line height depending on the font, 
-	% defined by its x-ratio and character constants, 
-	% respectively the font size and line width in characters per line
-	\dim_set:Nn #1 { \fp_to_decimal:n { \fp_eval:n { 
-		round(
-		\fsize_dim * (
-		 \qa_fp + 
-		 ( \qb_fp * (\cpl_int / ( \fsize_dim * \wf_int )) ) +
-		 \xhc_fp
-		 )
-		 ,2)
-	} } pt}
-}
-\NewDocumentCommand\setLineheight { O{}mm } {
-	\typo_lineheight:Nnnn #2{#3}{34}{#1}
-} 
-
-\NewDocumentCommand{\getFontname}{}
- {
+\NewDocumentCommand{\getFontname}{} {
   \str_set:Nx \l_tmpa_str { \fontname\font }
   \regex_replace_once:nnN { \:.* } { } \l_tmpa_str
   \regex_replace_once:nnN { \A \[(.*)\] \Z } { \1 } \l_tmpa_str
   \regex_replace_once:nnN { \.[^\.]* \Z } { } \l_tmpa_str
   \str_use:N \l_tmpa_str
- }
+}
  
-\newlength{\charwidth}
-\setAverageCharWidth{\charwidth}
-\newlength{\baseline}
+\newlength\charwidth
+\newlength\fontheight
 
 \AtBeginDocument{
-\typo_lineheight:Nnnn {\baseline}{66}{34}{}
+\setAverageCharWidth\charwidth
+\setTotalHeight\fontheight
 }
-\ExplSyntaxOff
+%\ExplSyntaxOff
 
