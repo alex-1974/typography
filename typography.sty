@@ -20,7 +20,7 @@
 \cs_new:Npn \typo_get_document_fontsize: {
 	\dim_eval:n { \f@size pt } 
 }
-\cs_new:Npn \typo_set_document_fontsize:N #1 {
+\cs_new_protected:Npn \typo_set_document_fontsize:N #1 {
 	\dim_set:Nn #1 { \f@size pt } 
 }
 \makeatother
@@ -133,10 +133,16 @@
 \exp_args_generate:n {NNe}
 
 % Get document fontsize in pt
-\NewDocumentCommand\documentFontsize { m } {
-	\typo_set_document_fontsize: #1
+\NewDocumentCommand\setDocumentFontsize { m } {
+	\typo_set_document_fontsize:N #1
 }
-
+% Total height
+\NewDocumentCommand\getTotalHeight { O{} } {
+	\typo_get_totalheight:N #1 
+}
+\NewDocumentCommand\setTotalHeight { O{} m } {
+	\typo_set_totalheight:Nn #2 {#1}
+}
 % Average charwidth
 \NewDocumentCommand\getAverageCharWidth { O{} } {
 	\typo_get_avg_charwidth:N #1 
@@ -158,13 +164,6 @@
 \NewDocumentCommand\getxHeight { O{} } {
 	\typo_get_xheight:n {#1}
 }
-% total height
-\NewDocumentCommand\setTotalHeight { O{} m } {
-	\typo_set_totalheight:Nn #2 {#1}
-}
-\NewDocumentCommand\getTotalHeight { O{} } {
-	\typo_get_totalheight:n {#1}
-}
 
 \NewDocumentCommand{\getFontname}{} {
   \str_set:Nx \l_tmpa_str { \fontname\font }
@@ -174,10 +173,12 @@
   \str_use:N \l_tmpa_str
 }
  
+\AtBeginDocument{
 \newlength\charwidth
 \newlength\fontheight
+\newlength\documentFontsize
 
-\AtBeginDocument{
+\setDocumentFontsize\documentFontsize
 \setAverageCharWidth\charwidth
 \setTotalHeight\fontheight
 }
